@@ -16,8 +16,9 @@ typedef struct Queue
     int next_cell;
     int oldest_record;
     qnode_t *queue;
-    mutex_t lock;
-    cond_t cond;
+    pthread_mutex_t lock;
+    pthread_cond_t full;
+    pthread_cond_t empty;
 
 } queue_t;
 

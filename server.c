@@ -62,7 +62,7 @@ void init_threads(int nthreads, queue_t *q1, queue_t *q2)
     while (nthreads--)
     {
         pthread_t t;
-        pthread_create(&t, NULL, &thread_worker, (void *)&args);
+        pthread_create(&t, NULL, thread_worker, (void *)&args);
     }
 };
 
