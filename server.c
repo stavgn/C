@@ -16,9 +16,9 @@
 
 void getargs(int *port, int *nthreads, int *queue_size, int *schedalg, int argc, char *argv[])
 {
-    if (argc < 2)
+    if (argc < 5)
     {
-        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
+        fprintf(stderr, " port : %s <port>\n", argv[0]);
         exit(1);
     }
     *port = atoi(argv[1]);
