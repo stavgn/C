@@ -1,4 +1,5 @@
 #include "queue.h"
+#include <stdlib.h>
 
 queue_t *init(int queue_max_length)
 {
@@ -11,7 +12,7 @@ queue_t *init(int queue_max_length)
     this->length = 0;
     this->next_cell = 0;
     this->oldest_record = -1;
-    qnode_t *array = malloc(sizeof(qnode_t)*queue_max_length);
+    qnode_t *array = malloc(sizeof(qnode_t) * queue_max_length);
     if (array == NULL)
     {
         free(this);
@@ -29,12 +30,12 @@ void destroy(queue_t *q)
 
 int enqueue(queue_t *q, qnode_t node)
 {
-    if(q->length == q->queue_max_length) // queue is full
+    if (q->length == q->queue_max_length) // queue is full
     {
         return -1;
     }
     q->queue[q->next_cell] = node;
-    if(q->length == 0)
+    if (q->length == 0)
     {
         q->oldest_record = q->next_cell;
     }

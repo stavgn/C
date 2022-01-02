@@ -1,6 +1,7 @@
 #include "segel.h"
 #include "request.h"
-
+#include "queue.h"
+#include <pthread.h>
 //
 // server.c: A very, very simple web server
 //
@@ -26,6 +27,43 @@ void getargs(int *port, int *nthreads, int *queue_size, int *schedalg, int argc,
     *schedalg = atoi(argv[4]);
 }
 
+typedef struct thread_args
+{
+    queue_t *incoming_requestes;
+    queue_t *handled_requests;
+} thread_args_t;
+
+void thread_worker(struct thread_args args)
+{
+    while (1)
+    {
+        qnode_t request;
+        int err = dequeue(args.incoming_requestes, &request);
+        if (err == -1)
+        {
+            break;
+        }
+        request.thread_id = pthread_self();
+        enqueue(args.handled_requests, request);
+        requestHandle(request.connfd);
+        Close(request.connfd);
+        dequeue(args.handled_requests, &request);
+    }
+}
+
+void init_threads(int nthreads, queue_t *q1, queue_t *q2)
+{
+    thread_args_t args;
+    args.incoming_requestes = q1;
+    args.handled_requests = q2;
+
+    while (nthreads--)
+    {
+        pthread_t t;
+        pthread_create(&t, NULL, &thread_worker, (void *)&args);
+    }
+};
+
 int main(int argc, char *argv[])
 {
     int listenfd, connfd, port, clientlen, nthreads, queue_size, schedalg;
@@ -33,23 +71,21 @@ int main(int argc, char *argv[])
 
     getargs(&port, &nthreads, &queue_size, &schedalg, argc, argv);
 
-    //
-    // HW3: Create some threads...
-    //
+    queue_t *waiting_requests = init(queue_size);
+    queue_t *handled_requests = init(queue_size);
 
+    init_threads(nthreads, waiting_requests, handled_requests);
     listenfd = Open_listenfd(port);
     while (1)
     {
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *)&clientlen);
-
-        //
-        // HW3: In general, don't handle the request in the main thread.
-        // Save the relevant info in a buffer and have one of the worker threads
-        // do the work.
-        //
-        requestHandle(connfd);
-
-        Close(connfd);
+        qnode_t request;
+        request.connfd = connfd;
+        int err = enqueue(waiting_requests, request);
+        if (err == -1)
+        {
+            //TODO
+        }
     }
 }
