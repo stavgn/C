@@ -3,6 +3,8 @@
 
 queue_t *init(int queue_max_length)
 {
+    
+
     queue_t *this = malloc(sizeof(queue_t));
     if (this == NULL)
     {
@@ -20,6 +22,8 @@ queue_t *init(int queue_max_length)
     }
     this->queue = array;
     return this;
+
+
 }
 
 void destroy(queue_t *q)
