@@ -14,6 +14,9 @@
 
 // HW3: Parse the new arguments too
 
+queue_t *incoming_requests;
+queue_t *handled_requests;
+
 void getargs(int *port, int *nthreads, int *queue_size, int *schedalg, int argc, char *argv[])
 {
     if (argc < 5)
@@ -33,36 +36,33 @@ typedef struct thread_args
     queue_t *handled_requests;
 } thread_args_t;
 
-void *thread_worker(void *param)
+void *thread_worker()
 {
     while (1)
     {
-        thread_args_t args = *((thread_args_t *)param);
         qnode_t request;
-        int err = dequeue(args.incoming_requestes, &request);
+        int err = dequeue(incoming_requests, &request);
+        printf("%d", err);
         if (err == -1)
         {
-            break;
+            printf("No request found");
+            continue;
         }
         request.thread_id = pthread_self();
-        enqueue(args.handled_requests, request);
+        enqueue(handled_requests, request);
         requestHandle(request.connfd);
         Close(request.connfd);
-        dequeue(args.handled_requests, &request);
+        dequeue(handled_requests, &request);
     }
     return NULL;
 }
 
-void init_threads(int nthreads, queue_t *q1, queue_t *q2)
+void init_threads(int nthreads)
 {
-    thread_args_t args;
-    args.incoming_requestes = q1;
-    args.handled_requests = q2;
-
     while (nthreads--)
     {
         pthread_t t;
-        pthread_create(&t, NULL, thread_worker, (void *)&args);
+        pthread_create(&t, NULL, thread_worker, NULL);
     }
 };
 
@@ -73,18 +73,18 @@ int main(int argc, char *argv[])
 
     getargs(&port, &nthreads, &queue_size, &schedalg, argc, argv);
 
-    queue_t *waiting_requests = init(queue_size);
-    queue_t *handled_requests = init(queue_size);
+    incoming_requests = init(queue_size);
+    handled_requests = init(queue_size);
 
-    init_threads(nthreads, waiting_requests, handled_requests);
+    init_threads(nthreads);
     listenfd = Open_listenfd(port);
     while (1)
     {
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *)&clientlen);
-        qnode_t request;
-        request.connfd = connfd;
-        int err = enqueue(waiting_requests, request);
+        qnode_t *request = malloc(sizeof(qnode_t));
+        request->connfd = connfd;
+        int err = enqueue(incoming_requests, *request);
         if (err == -1)
         {
             //TODO
