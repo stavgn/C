@@ -37,11 +37,13 @@ void *thread_worker(void *param)
 {
     while (1)
     {
+        printf("I'm a Thread! %d", pthread_self());
         thread_args_t args = *((thread_args_t *)param);
         qnode_t request;
         int err = dequeue(args.incoming_requestes, &request);
         if (err == -1)
         {
+            printf("No request found");
             break;
         }
         request.thread_id = pthread_self();
@@ -49,6 +51,7 @@ void *thread_worker(void *param)
         requestHandle(request.connfd);
         Close(request.connfd);
         dequeue(args.handled_requests, &request);
+        printf("I'm a Thread and im done! %d", pthread_self());
     }
     return NULL;
 }
