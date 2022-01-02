@@ -33,10 +33,11 @@ typedef struct thread_args
     queue_t *handled_requests;
 } thread_args_t;
 
-void thread_worker(struct thread_args args)
+void *thread_worker(void *param)
 {
     while (1)
     {
+        thread_args_t args = *((thread_args_t *)param);
         qnode_t request;
         int err = dequeue(args.incoming_requestes, &request);
         if (err == -1)
@@ -49,6 +50,7 @@ void thread_worker(struct thread_args args)
         Close(request.connfd);
         dequeue(args.handled_requests, &request);
     }
+    return NULL;
 }
 
 void init_threads(int nthreads, queue_t *q1, queue_t *q2)
