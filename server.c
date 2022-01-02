@@ -62,12 +62,7 @@ void init_threads(int nthreads)
     while (nthreads--)
     {
         pthread_t t;
-<<<<<<< HEAD
         pthread_create(&t, NULL, thread_worker, NULL);
-        //thread_worker((void *)&args);
-=======
-        pthread_create(&t, NULL, thread_worker, (void *)&args);
->>>>>>> 8918f42f446c5bdebc8da39c398c50deb6bbbf11
     }
 };
 
