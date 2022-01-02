@@ -21,7 +21,7 @@ void getargs(int *port, int *nthreads, int *queue_size, int *schedalg, int argc,
 {
     if (argc < 5)
     {
-        fprintf(stderr, " port : %s <port><number of threads><queue size><schedalg>\n", argv[0]);
+        fprintf(stderr, " Usage : %s <port><number of threads><queue size><schedalg>\n", argv[0]);
         exit(1);
     }
     *port = atoi(argv[1]);
@@ -82,9 +82,9 @@ int main(int argc, char *argv[])
     {
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *)&clientlen);
-        qnode_t *request = malloc(sizeof(qnode_t));
-        request->connfd = connfd;
-        int err = enqueue(incoming_requests, *request);
+        qnode_t request;
+        request.connfd = connfd;
+        int err = enqueue(incoming_requests, request);
         if (err == -1)
         {
             //TODO

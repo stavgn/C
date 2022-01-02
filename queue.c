@@ -7,7 +7,7 @@ queue_t *init(int queue_max_length)
     queue_t *this = malloc(sizeof(queue_t));
     if (this == NULL)
     {
-        return this;
+        return NULL;
     }
     this->queue_max_length = queue_max_length;
     this->length = 0;
