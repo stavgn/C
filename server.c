@@ -17,6 +17,11 @@
 queue_t *incoming_requests;
 queue_t *handled_requests;
 
+int get_num_of_available_reqs()
+{
+    return count_free_cells(incoming_requests) + count_free_cells(handled_requests);
+}
+
 void getargs(int *port, int *nthreads, int *queue_size, int *schedalg, int argc, char *argv[])
 {
     if (argc < 5)
@@ -80,6 +85,10 @@ int main(int argc, char *argv[])
     listenfd = Open_listenfd(port);
     while (1)
     {
+        if (get_num_of_available_reqs() == 0)
+        {
+            pthread_cond_wait(&handled_requests->full, &handled_requests->lock);
+        }
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *)&clientlen);
         qnode_t request;
