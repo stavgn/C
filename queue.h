@@ -27,5 +27,6 @@ int enqueue(queue_t *q, qnode_t node);
 int dequeue(queue_t *q, qnode_t *node);
 int count_free_cells(queue_t *q);
 void destroy(queue_t *q);
+int* _random_sub_set(int range);
 
 #endif

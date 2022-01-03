@@ -108,3 +108,42 @@ int count_free_cells(queue_t *q)
     }
     return q->queue_max_length - q->length;
 }
+
+
+int* _random_sub_set(int range)
+{
+    int *array = malloc(sizeof(int)*range);
+    if (array == NULL) {
+        return NULL;
+    }
+    int *sorted_array = malloc(sizeof(int)*range);
+    if (sorted_array == NULL) {
+        free(array);
+        return NULL;
+    }
+    for (int i = 0; i < range; i++)
+    {
+        array[i] = i;
+        sorted_array[i] = 0;
+    }
+
+    srand(time(NULL));
+    int r;
+    int len = range;
+    while (--len) // shufel array
+    {
+         r = rand() % len;
+         int tmp = array[r];
+         array[r] = array[len];
+         array[len] = tmp;
+    }
+
+    // takes the first range/2 random indexs
+
+    for (int i = 0; i < range/2; i++)
+    {
+        sorted_array[array[i]] = 1;
+    }
+    free(array);
+    return sorted_array;
+}
