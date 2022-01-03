@@ -129,14 +129,15 @@ int* _random_sub_set(int range)
 
     srand(time(NULL));
     int r;
-    int len = range;
-    while (--len) // shufel array
+    for(int len=(range -1); len>0; len--)// shufel array
     {
-         r = rand() % len;
+         r = rand() % (len+1);
          int tmp = array[r];
          array[r] = array[len];
          array[len] = tmp;
     }
+
+    
 
     // takes the first range/2 random indexs
 
