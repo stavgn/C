@@ -1,7 +1,7 @@
+#include <pthread.h>
 #include "segel.h"
 #include "request.h"
 #include "queue.h"
-#include <pthread.h>
 //
 // server.c: A very, very simple web server
 //
@@ -16,7 +16,7 @@
 
 queue_t *incoming_requests;
 
-void getargs(int *port, int *nthreads, int *queue_size, int *schedalg, int argc, char *argv[])
+void getargs(int *port, int *nthreads, int *queue_size, char **schedalg, int argc, char *argv[])
 {
     if (argc < 5)
     {
@@ -26,7 +26,7 @@ void getargs(int *port, int *nthreads, int *queue_size, int *schedalg, int argc,
     *port = atoi(argv[1]);
     *nthreads = atoi(argv[2]);
     *queue_size = atoi(argv[3]);
-    *schedalg = atoi(argv[4]);
+    *schedalg = argv[4];
 }
 
 typedef struct thread_args
@@ -47,9 +47,12 @@ void *thread_worker()
             continue;
         }
         request.thread_id = pthread_self();
+        printf("handle request, There are %d request and %d working threds\n",incoming_requests->length,incoming_requests->working_threds);
         requestHandle(request.connfd);
         Close(request.connfd);
         done(incoming_requests);
+        printf("done with request, There are %d request and %d working threds\n",incoming_requests->length,incoming_requests->working_threds);
+
     }
     return NULL;
 }
@@ -65,12 +68,13 @@ void init_threads(int nthreads)
 
 int main(int argc, char *argv[])
 {
-    int listenfd, connfd, port, clientlen, nthreads, queue_size, schedalg;
+    int listenfd, connfd, port, clientlen, nthreads, queue_size;
+    char *schedalg;
     struct sockaddr_in clientaddr;
 
     getargs(&port, &nthreads, &queue_size, &schedalg, argc, argv);
 
-    incoming_requests = init(queue_size);
+    incoming_requests = init(queue_size, schedalg);
 
     init_threads(nthreads);
     listenfd = Open_listenfd(port);
@@ -80,6 +84,8 @@ int main(int argc, char *argv[])
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *)&clientlen);
         qnode_t request;
         request.connfd = connfd;
-        int err = enqueue(incoming_requests, request);
+        enqueue(incoming_requests, request);
+        printf("got new request\n");
+
     }
 }

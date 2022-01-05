@@ -1,7 +1,7 @@
 #include "queue.h"
 #include <stdlib.h>
 
-queue_t *init(int queue_max_length)
+queue_t *init(int queue_max_length, char *schedalg)
 {
 
     queue_t *this = malloc(sizeof(queue_t));
@@ -14,6 +14,7 @@ queue_t *init(int queue_max_length)
     this->next_cell = 0;
     this->oldest_record = -1;
     this->working_threds = 0;
+    this->schedalg = schedalg;
     qnode_t *array = malloc(sizeof(qnode_t) * queue_max_length);
     if (array == NULL)
     {
@@ -62,7 +63,30 @@ int enqueue(queue_t *q, qnode_t node)
     pthread_mutex_lock(&q->lock);
     while ((q->length + q->working_threds) >= q->queue_max_length) // queue is full
     {
-        pthread_cond_wait(&q->full, &q->lock);
+        if (!strcmp(q->schedalg, "block"))
+        {
+            printf("queue is full 'Blocking', %d request %d threads\n", q->length, q->working_threds);
+            pthread_cond_wait(&q->full, &q->lock);
+        }
+        else if ((q->length ==0) || (!strcmp(q->schedalg, "drop_tail")))
+        {
+            printf("queue is full 'Closing New Request', %d request %d threads\n", q->length, q->working_threds);
+            Close(node.connfd);
+            pthread_mutex_unlock(&q->lock);
+            return 0;
+        }
+        else if (!strcmp(q->schedalg, "drop_head"))
+        {
+            printf("queue is full 'Droping Head', %d request %d threads\n", q->length, q->working_threds);
+            qnode_t tmp;
+            dequeue_unsafe(q,&tmp);
+        }
+        else if (!strcmp(q->schedalg, "drop_random"))
+        {
+            printf("queue is full 'Droping Random', %d request %d threads\n", q->length, q->working_threds);
+            drop_random(q);
+        }
+        
     }
     q->queue[q->next_cell] = node;
     if (q->length == 0)
@@ -75,14 +99,13 @@ int enqueue(queue_t *q, qnode_t node)
     pthread_mutex_unlock(&q->lock);
     return 0;
 }
-int dequeue(queue_t *q, qnode_t *node)
-{
 
-    if ((q == NULL) || (node == NULL))
+int dequeue_unsafe(queue_t *q, qnode_t *node)
+{
+      if ((q == NULL) || (node == NULL))
     {
         return -1;
     }
-    pthread_mutex_lock(&q->lock);
     while (q->length <= 0)
     {
         pthread_cond_wait(&q->empty, &q->lock);
@@ -94,6 +117,18 @@ int dequeue(queue_t *q, qnode_t *node)
     {
         q->oldest_record = -1;
     }
+    return 0;
+}
+
+int dequeue(queue_t *q, qnode_t *node)
+{
+
+    if ((q == NULL) || (node == NULL))
+    {
+        return -1;
+    }
+    pthread_mutex_lock(&q->lock);
+    dequeue_unsafe(q,node);
     pthread_mutex_unlock(&q->lock);
     return 0;
 }
@@ -104,16 +139,15 @@ int handle(queue_t *q, qnode_t *node)
     {
         return -1;
     }
-    pthread_mutex_lock(&q->lock);
     if (dequeue(q, node) == 0)
     {
+        pthread_mutex_lock(&q->lock);
         q->working_threds++;
         pthread_mutex_unlock(&q->lock);
         return 0;
     }
     else
     {
-        pthread_mutex_unlock(&q->lock);
         return -1;
     }
 }
@@ -171,10 +205,49 @@ int *_random_sub_set(int range)
 
     // takes the first range/2 random indexs
 
-    for (int i = 0; i < range / 2 + (range % 2); i++)
+    for (int i = 0; i < range / 2; i++)
     {
         sorted_array[array[i]] = 1;
     }
     free(array);
     return sorted_array;
+}
+
+void drop_random(queue_t *q) // asume that lock is locked
+{
+    if (q == NULL)
+    {
+        return;
+    }
+    qnode_t *new_array = malloc(sizeof(qnode_t) * q->queue_max_length);
+    if (new_array == NULL)
+    {
+        exit(0);
+    }
+    int *random_array = _random_sub_set(q->length);
+    int counter = 0;
+    for (int i = 0; i < q->length; i++)
+    {
+        if (random_array[i])
+        {
+            int index = (q->oldest_record + i) % q->queue_max_length;
+            new_array[counter] = q->queue[index];
+            counter++;
+        }
+    }
+    if (counter == 0)
+    {
+        q->oldest_record = -1;
+        q->next_cell = 0;
+        q->length = 0;
+    }
+    else
+    {
+        q->oldest_record = 0;
+        q->next_cell = counter;
+        q->length = counter;
+    }
+    free(q->queue);
+    q->queue = new_array;
+    return;
 }
