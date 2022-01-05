@@ -13,6 +13,7 @@ queue_t *init(int queue_max_length)
     this->length = 0;
     this->next_cell = 0;
     this->oldest_record = -1;
+    this->working_threds = 0;
     qnode_t *array = malloc(sizeof(qnode_t) * queue_max_length);
     if (array == NULL)
     {
@@ -27,7 +28,7 @@ queue_t *init(int queue_max_length)
         free(this);
         return NULL;
     }
-    if ((pthread_cond_init(&this->full, NULL) < 0) || (pthread_cond_init(&this->empty,NULL) <0))
+    if ((pthread_cond_init(&this->full, NULL) < 0) || (pthread_cond_init(&this->empty, NULL) < 0))
     {
         pthread_cond_destroy(&this->full);
         pthread_cond_destroy(&this->empty);
@@ -37,13 +38,11 @@ queue_t *init(int queue_max_length)
         return NULL;
     }
     return this;
-
-
 }
 
 void destroy(queue_t *q)
 {
-    if(q == NULL)
+    if (q == NULL)
     {
         return;
     }
@@ -61,9 +60,9 @@ int enqueue(queue_t *q, qnode_t node)
         return -1;
     }
     pthread_mutex_lock(&q->lock);
-    while (q->length >= q->queue_max_length) // queue is full
+    while ((q->length + q->working_threds) >= q->queue_max_length) // queue is full
     {
-        pthread_cond_wait(&q->full,&q->lock);
+        pthread_cond_wait(&q->full, &q->lock);
     }
     q->queue[q->next_cell] = node;
     if (q->length == 0)
@@ -84,9 +83,9 @@ int dequeue(queue_t *q, qnode_t *node)
         return -1;
     }
     pthread_mutex_lock(&q->lock);
-    while(q->length <= 0)
+    while (q->length <= 0)
     {
-        pthread_cond_wait(&q->empty,&q->lock);
+        pthread_cond_wait(&q->empty, &q->lock);
     }
     q->length--;
     *node = q->queue[q->oldest_record];
@@ -95,6 +94,38 @@ int dequeue(queue_t *q, qnode_t *node)
     {
         q->oldest_record = -1;
     }
+    pthread_mutex_unlock(&q->lock);
+    return 0;
+}
+
+int handle(queue_t *q, qnode_t *node)
+{
+    if ((q == NULL) || (node == NULL))
+    {
+        return -1;
+    }
+    pthread_mutex_lock(&q->lock);
+    if (dequeue(q, node) == 0)
+    {
+        q->working_threds++;
+        pthread_mutex_unlock(&q->lock);
+        return 0;
+    }
+    else
+    {
+        pthread_mutex_unlock(&q->lock);
+        return -1;
+    }
+}
+
+int done(queue_t *q)
+{
+    if (q == NULL)
+    {
+        return -1;
+    }
+    pthread_mutex_lock(&q->lock);
+    q->working_threds--;
     pthread_cond_signal(&q->full);
     pthread_mutex_unlock(&q->lock);
     return 0;
@@ -109,15 +140,16 @@ int count_free_cells(queue_t *q)
     return q->queue_max_length - q->length;
 }
 
-
-int* _random_sub_set(int range)
+int *_random_sub_set(int range)
 {
-    int *array = malloc(sizeof(int)*range);
-    if (array == NULL) {
+    int *array = malloc(sizeof(int) * range);
+    if (array == NULL)
+    {
         return NULL;
     }
-    int *sorted_array = malloc(sizeof(int)*range);
-    if (sorted_array == NULL) {
+    int *sorted_array = malloc(sizeof(int) * range);
+    if (sorted_array == NULL)
+    {
         free(array);
         return NULL;
     }
@@ -129,19 +161,17 @@ int* _random_sub_set(int range)
 
     srand(time(NULL));
     int r;
-    for(int len=(range -1); len>0; len--)// shufel array
+    for (int len = (range - 1); len > 0; len--) // shufel array
     {
-         r = rand() % (len+1);
-         int tmp = array[r];
-         array[r] = array[len];
-         array[len] = tmp;
+        r = rand() % (len + 1);
+        int tmp = array[r];
+        array[r] = array[len];
+        array[len] = tmp;
     }
-
-    
 
     // takes the first range/2 random indexs
 
-    for (int i = 0; i < range/2; i++)
+    for (int i = 0; i < range / 2 + (range % 2); i++)
     {
         sorted_array[array[i]] = 1;
     }
