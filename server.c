@@ -15,12 +15,6 @@
 // HW3: Parse the new arguments too
 
 queue_t *incoming_requests;
-queue_t *handled_requests;
-
-int get_num_of_available_reqs()
-{
-    return count_free_cells(incoming_requests) + count_free_cells(handled_requests);
-}
 
 void getargs(int *port, int *nthreads, int *queue_size, int *schedalg, int argc, char *argv[])
 {
@@ -46,18 +40,16 @@ void *thread_worker()
     while (1)
     {
         qnode_t request;
-        int err = dequeue(incoming_requests, &request);
-        printf("%d", err);
+        int err = handle(incoming_requests, &request);
         if (err == -1)
         {
             printf("No request found");
             continue;
         }
         request.thread_id = pthread_self();
-        enqueue(handled_requests, request);
         requestHandle(request.connfd);
         Close(request.connfd);
-        dequeue(handled_requests, &request);
+        done(incoming_requests);
     }
     return NULL;
 }
@@ -79,24 +71,15 @@ int main(int argc, char *argv[])
     getargs(&port, &nthreads, &queue_size, &schedalg, argc, argv);
 
     incoming_requests = init(queue_size);
-    handled_requests = init(queue_size);
 
     init_threads(nthreads);
     listenfd = Open_listenfd(port);
     while (1)
     {
-        if (get_num_of_available_reqs() == 0)
-        {
-            pthread_cond_wait(&handled_requests->full, &handled_requests->lock);
-        }
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *)&clientlen);
         qnode_t request;
         request.connfd = connfd;
         int err = enqueue(incoming_requests, request);
-        if (err == -1)
-        {
-            //TODO
-        }
     }
 }
