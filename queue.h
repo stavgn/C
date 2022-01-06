@@ -3,9 +3,6 @@
 #include <string.h>
 #include "segel.h"
 
-
-
-
 typedef struct QueueNode
 {
     pthread_t thread_id;
@@ -35,7 +32,7 @@ int handle(queue_t *q, qnode_t *node);
 int done(queue_t *q);
 int count_free_cells(queue_t *q);
 void destroy(queue_t *q);
-int* _random_sub_set(int range);
+int *_random_sub_set(int range);
 void drop_random(queue_t *q);
 
 #endif

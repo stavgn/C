@@ -2,6 +2,7 @@
 #include "segel.h"
 #include "request.h"
 #include "queue.h"
+#include "stats.h"
 //
 // server.c: A very, very simple web server
 //
@@ -29,14 +30,9 @@ void getargs(int *port, int *nthreads, int *queue_size, char **schedalg, int arg
     *schedalg = argv[4];
 }
 
-typedef struct thread_args
-{
-    queue_t *incoming_requestes;
-    queue_t *handled_requests;
-} thread_args_t;
-
 void *thread_worker()
 {
+    acknowledge_thread();
     while (1)
     {
         qnode_t request;
@@ -47,12 +43,11 @@ void *thread_worker()
             continue;
         }
         request.thread_id = pthread_self();
-        printf("handle request, There are %d request and %d working threds\n",incoming_requests->length,incoming_requests->working_threds);
+        printf("handle request, There are %d request and %d working threds\n", incoming_requests->length, incoming_requests->working_threds);
         requestHandle(request.connfd);
         Close(request.connfd);
         done(incoming_requests);
-        printf("done with request, There are %d request and %d working threds\n",incoming_requests->length,incoming_requests->working_threds);
-
+        printf("done with request, There are %d request and %d working threds\n", incoming_requests->length, incoming_requests->working_threds);
     }
     return NULL;
 }
@@ -75,6 +70,7 @@ int main(int argc, char *argv[])
     getargs(&port, &nthreads, &queue_size, &schedalg, argc, argv);
 
     incoming_requests = init(queue_size, schedalg);
+    init_stat(nthreads);
 
     init_threads(nthreads);
     listenfd = Open_listenfd(port);
@@ -86,6 +82,5 @@ int main(int argc, char *argv[])
         request.connfd = connfd;
         enqueue(incoming_requests, request);
         printf("got new request\n");
-
     }
 }
