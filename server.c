@@ -42,7 +42,11 @@ void *thread_worker()
             printf("No request found");
             continue;
         }
+        struct timeval now;
+        gettimeofday(&now, NULL);
+        timersub(&request.createdAt, &now, &request.handledAt);
         request.thread_id = pthread_self();
+        load_request(request);
         printf("handle request, There are %d request and %d working threds\n", incoming_requests->length, incoming_requests->working_threds);
         requestHandle(request.connfd);
         Close(request.connfd);
@@ -79,6 +83,7 @@ int main(int argc, char *argv[])
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *)&clientlen);
         qnode_t request;
+        gettimeofday(&request.createdAt, NULL);
         request.connfd = connfd;
         enqueue(incoming_requests, request);
         printf("got new request\n");

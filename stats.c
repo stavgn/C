@@ -16,6 +16,7 @@ void init_stat(int nthreads)
     pthread_t *ack_threads = malloc(sizeof(pthread_t) * nthreads);
     int *per_thread_static_requests_counter = malloc(sizeof(int) * nthreads);
     int *per_thread_dynamic_requests_counter = malloc(sizeof(int) * nthreads);
+    qnode_t *per_thread_requests = malloc(sizeof(qnode_t) * nthreads);
 
     init_array(per_thread_static_requests_counter, nthreads);
     init_array(per_thread_dynamic_requests_counter, nthreads);
@@ -24,6 +25,7 @@ void init_stat(int nthreads)
     statManager->per_thread_static_requests_counter = per_thread_static_requests_counter;
     statManager->per_thread_dynamic_requests_counter = per_thread_dynamic_requests_counter;
     statManager->n_ack_threads = 0;
+    statManager->per_thread_requests = per_thread_requests;
     statManager->n_threads = nthreads;
 }
 
@@ -44,6 +46,16 @@ void inc_static()
         return;
     }
     statManager->per_thread_static_requests_counter[s]++;
+}
+
+void inc_dynamic()
+{
+    int s = find_slot();
+    if (s == -1)
+    {
+        return;
+    }
+    statManager->per_thread_dynamic_requests_counter[s]++;
 }
 
 int find_slot()
@@ -70,7 +82,33 @@ void write_header(char *hdr, char *buf)
     if (!strcmp(hdr, "Stat-Thread-Static"))
     {
         int val = statManager->per_thread_static_requests_counter[s];
-        sprintf(buf, "%s%s: %d\r\n", buf, hdr, val);
+        sprintf(buf, "%s%s:: %d\r\n", buf, hdr, val);
+    }
+
+    if (!strcmp(hdr, "Stat-Thread-Static"))
+    {
+        int val = statManager->per_thread_static_requests_counter[s];
+        sprintf(buf, "%s%s:: %d\r\n", buf, hdr, val);
+    }
+    if (!strcmp(hdr, "Stat-Req-Arrival"))
+    {
+        struct timeval val = statManager->per_thread_requests[s].createdAt;
+        sprintf(buf, "%s%s:: %lu.%06lu\r\n", buf, hdr, val.tv_sec, val.tv_usec);
+    }
+    if (!strcmp(hdr, "Stat-Req-Dispatch"))
+    {
+        struct timeval val = statManager->per_thread_requests[s].handledAt;
+        sprintf(buf, "%s%s:: %lu.%06lu\r\n", buf, hdr, val.tv_sec, val.tv_usec);
+    }
+    if (!strcmp(hdr, "Stat-Thread-Id"))
+    {
+        pthread_t val = pthread_self();
+        sprintf(buf, "%s%s:: %d\r\n", buf, hdr, val);
+    }
+    if (!strcmp(hdr, "Stat-Thread-Dynamic"))
+    {
+        int val = statManager->per_thread_dynamic_requests_counter[s];
+        sprintf(buf, "%s%s:: %d\r\n", buf, hdr, val);
     }
 }
 
@@ -82,11 +120,18 @@ void init_array(int *arr, int size)
     }
 }
 
+void load_request(qnode_t req)
+{
+    int s = find_slot();
+    statManager->per_thread_requests[s] = req;
+}
+
 void destroy_stat()
 {
     free(statManager->ack_threads);
     free(statManager->per_thread_dynamic_requests_counter);
     free(statManager->per_thread_static_requests_counter);
+    free(statManager->per_thread_requests);
     pthread_mutex_destroy(&statManager->lock);
     free(statManager);
 }

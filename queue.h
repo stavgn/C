@@ -1,12 +1,16 @@
 #ifndef __QUEUE__
+#define __QUEUE__
 #include <pthread.h>
+#include <sys/time.h>
 #include <string.h>
 #include "segel.h"
-
 typedef struct QueueNode
 {
     pthread_t thread_id;
     int connfd;
+    struct timeval createdAt;
+    struct timeval handledAt;
+
 } qnode_t;
 
 typedef struct Queue
