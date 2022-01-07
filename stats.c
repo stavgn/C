@@ -1,8 +1,8 @@
-#include "stats.h"
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
+#include "stats.h"
 
 void init_stat(int nthreads)
 {
@@ -94,17 +94,17 @@ void write_header(char *hdr, char *buf)
     if (!strcmp(hdr, "Stat-Req-Arrival"))
     {
         struct timeval val = statManager->per_thread_requests[s].createdAt;
-        sprintf(buf, "%s%s:: %lu.%06lu\r\n", buf, hdr, val.tv_sec, val.tv_usec);
+        sprintf(buf, "%s%s:: %ld.%06ld\r\n", buf, hdr, val.tv_sec, val.tv_usec);
     }
     if (!strcmp(hdr, "Stat-Req-Dispatch"))
     {
         struct timeval val = statManager->per_thread_requests[s].handledAt;
-        sprintf(buf, "%s%s:: %lu.%06lu\r\n", buf, hdr, val.tv_sec, val.tv_usec);
+        sprintf(buf, "%s%s:: %ld.%06ld\r\n", buf, hdr, val.tv_sec, val.tv_usec);
     }
     if (!strcmp(hdr, "Stat-Thread-Id"))
     {
         pthread_t val = pthread_self();
-        sprintf(buf, "%s%s:: %d\r\n", buf, hdr, val);
+        sprintf(buf, "%s%s:: %lu\r\n", buf, hdr, val);
     }
     if (!strcmp(hdr, "Stat-Thread-Dynamic"))
     {

@@ -44,7 +44,7 @@ void *thread_worker()
         }
         struct timeval now;
         gettimeofday(&now, NULL);
-        timersub(&request.createdAt, &now, &request.handledAt);
+        timersub(&now, &request.createdAt, &request.handledAt);
         request.thread_id = pthread_self();
         load_request(request);
         printf("handle request, There are %d request and %d working threds\n", incoming_requests->length, incoming_requests->working_threds);
