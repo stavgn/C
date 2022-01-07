@@ -68,20 +68,20 @@ int enqueue(queue_t *q, qnode_t node)
             printf("queue is full 'Blocking', %d request %d threads\n", q->length, q->working_threds);
             pthread_cond_wait(&q->full, &q->lock);
         }
-        else if ((q->length == 0) || (!strcmp(q->schedalg, "drop_tail")))
+        else if ((q->length == 0) || (!strcmp(q->schedalg, "dt")))
         {
             printf("queue is full 'Closing New Request', %d request %d threads\n", q->length, q->working_threds);
             Close(node.connfd);
             pthread_mutex_unlock(&q->lock);
             return 0;
         }
-        else if (!strcmp(q->schedalg, "drop_head"))
+        else if (!strcmp(q->schedalg, "dh"))
         {
             printf("queue is full 'Droping Head', %d request %d threads\n", q->length, q->working_threds);
             qnode_t tmp;
             dequeue_unsafe(q, &tmp);
         }
-        else if (!strcmp(q->schedalg, "drop_random"))
+        else if (!strcmp(q->schedalg, "random"))
         {
             printf("queue is full 'Droping Random', %d request %d threads\n", q->length, q->working_threds);
             drop_random(q);
