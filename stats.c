@@ -82,10 +82,11 @@ void write_header(char *hdr, char *buf)
     if (!strcmp(hdr, "Stat-Thread-Static"))
     {
         int val = statManager->per_thread_static_requests_counter[s];
-        sprintf(buf, "%s%s:: %d\r\n", buf, hdr, val);
+        int val2 = statManager->per_thread_dynamic_requests_counter[s];
+        sprintf(buf, "%s%s:: %d\r\n", buf, hdr, val + val2);
     }
 
-    if (!strcmp(hdr, "Stat-Thread-Static"))
+    if (!strcmp(hdr, "Stat-Thread-Count"))
     {
         int val = statManager->per_thread_static_requests_counter[s];
         sprintf(buf, "%s%s:: %d\r\n", buf, hdr, val);

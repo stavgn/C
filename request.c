@@ -125,6 +125,7 @@ void requestServeDynamic(int fd, char *filename, char *cgiargs)
    write_header("Stat-Req-Dispatch", buf);
    write_header("Stat-Thread-Static", buf);
    write_header("Stat-Thread-Dynamic", buf);
+   write_header("Stat-Thread-Count", buf);
    sprintf(buf, "%s\r\n", buf);
    sprintf(buf, "%sServer: OS-HW3 Web Server\r\n", buf);
 
@@ -163,7 +164,7 @@ void requestServeStatic(int fd, char *filename, int filesize)
    write_header("Stat-Thread-Static", buf);
    write_header("Stat-Req-Arrival", buf);
    write_header("Stat-Req-Dispatch", buf);
-   write_header("Stat-Thread-Static", buf);
+   write_header("Stat-Thread-Count", buf);
    write_header("Stat-Thread-Dynamic", buf);
    sprintf(buf, "%s\r\n", buf);
    Rio_writen(fd, buf, strlen(buf));
