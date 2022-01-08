@@ -1,0 +1,79 @@
+test_drop_double_queue_size
+Setting up test:
+	thread: 3
+	queue size: 7
+	policy: dh
+Requesting url: http://localhost:8080/output.cgi
+test_drop_single
+Setting up test:
+	thread: 3
+	queue size: 7
+	policy: dh
+Requesting url: http://localhost:8080/output.cgi
+test_double_drop_random
+Setting up test:
+	thread: 3
+	queue size: 16
+	policy: random
+Requesting url: http://localhost:8080/output.cgi
+test_no_drop
+Setting up test:
+	thread: 3
+	queue size: 16
+	policy: random
+Requesting url: http://localhost:8080/output.cgi
+test_single_drop_random
+Setting up test:
+	thread: 3
+	queue size: 16
+	policy: random
+Requesting url: http://localhost:8080/output.cgi
+test_drop_double_queue_size
+Setting up test:
+	thread: 3
+	queue size: 7
+	policy: dt
+Requesting url: http://localhost:8080/output.cgi
+test_drop_single
+Setting up test:
+	thread: 3
+	queue size: 7
+	policy: dt
+Requesting url: http://localhost:8080/output.cgi
+test_better_with_more_threads
+Setting up test:
+	thread: 3
+	queue size: 80
+	policy: dt
+Requesting url: http://localhost:8080/output.cgi
+test_time_full_queue
+Setting up test:
+	thread: 3
+	queue size: 80
+	policy: dt
+Requesting url: http://localhost:8080/output.cgi
+test_404
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt
+test_dynamic
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt
+test_forbidden
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt
+test_post
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt
+test_static
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt

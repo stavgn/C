@@ -30,7 +30,14 @@ void requestError(int fd, char *cause, char *errnum, char *shortmsg, char *longm
    Rio_writen(fd, buf, strlen(buf));
    printf("%s", buf);
 
-   sprintf(buf, "Content-Length: %lu\r\n\r\n", strlen(body));
+   sprintf(buf, "Content-Length: %lu\r\n", strlen(body));
+   write_header("Stat-Thread-Id", buf);
+   write_header("Stat-Req-Arrival", buf);
+   write_header("Stat-Req-Dispatch", buf);
+   write_header("Stat-Thread-Static", buf);
+   write_header("Stat-Thread-Dynamic", buf);
+   write_header("Stat-Thread-Count", buf);
+   sprintf(buf, "%s\r\n", buf);
    Rio_writen(fd, buf, strlen(buf));
    printf("%s", buf);
 
@@ -166,6 +173,7 @@ void requestServeStatic(int fd, char *filename, int filesize)
    write_header("Stat-Req-Dispatch", buf);
    write_header("Stat-Thread-Count", buf);
    write_header("Stat-Thread-Dynamic", buf);
+   write_header("Stat-Thread-Id", buf);
    sprintf(buf, "%s\r\n", buf);
    Rio_writen(fd, buf, strlen(buf));
 
@@ -177,7 +185,7 @@ void requestServeStatic(int fd, char *filename, int filesize)
 // handle a request
 void requestHandle(int fd)
 {
-
+   inc_total();
    int is_static;
    struct stat sbuf;
    char buf[MAXLINE], method[MAXLINE], uri[MAXLINE], version[MAXLINE];

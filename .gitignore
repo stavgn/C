@@ -3,4 +3,5 @@
 server
 client
 public/output.cgi
-/test/
+/test/modefied_test_with_setup
+/test/venv

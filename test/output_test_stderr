@@ -1,0 +1,280 @@
+EEEEEEEEEFFFFF
+======================================================================
+ERROR: test_drop_double_queue_size (__main__.TestDropHeadRequests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 191, in test_drop_double_queue_size
+    asyncio.run(self.make_requests(self.dyn_url, self.max_reqs + self.queue_size * 2))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 138, in make_requests
+    thread_stats[tid]['count'] = max(count, thread_stats[tid]['count'])
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_drop_single (__main__.TestDropHeadRequests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 188, in test_drop_single
+    asyncio.run(self.make_requests(self.dyn_url, self.max_reqs + 1))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 138, in make_requests
+    thread_stats[tid]['count'] = max(count, thread_stats[tid]['count'])
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_double_drop_random (__main__.TestDropRandomRequests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 202, in test_double_drop_random
+    asyncio.run(self.make_requests(self.dyn_url, self.max_reqs + 2 * int(0.5 * self.queue_size)))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 138, in make_requests
+    thread_stats[tid]['count'] = max(count, thread_stats[tid]['count'])
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_no_drop (__main__.TestDropRandomRequests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 205, in test_no_drop
+    asyncio.run(self.make_requests(self.dyn_url, self.max_reqs))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 138, in make_requests
+    thread_stats[tid]['count'] = max(count, thread_stats[tid]['count'])
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_single_drop_random (__main__.TestDropRandomRequests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 199, in test_single_drop_random
+    asyncio.run(self.make_requests(self.dyn_url, self.max_reqs + 1))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 138, in make_requests
+    thread_stats[tid]['count'] = max(count, thread_stats[tid]['count'])
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_drop_double_queue_size (__main__.TestDropTailRequests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 180, in test_drop_double_queue_size
+    asyncio.run(self.make_requests(self.dyn_url, self.max_reqs + self.queue_size * 2))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 138, in make_requests
+    thread_stats[tid]['count'] = max(count, thread_stats[tid]['count'])
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_drop_single (__main__.TestDropTailRequests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 177, in test_drop_single
+    asyncio.run(self.make_requests(self.dyn_url, self.max_reqs + 1))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 138, in make_requests
+    thread_stats[tid]['count'] = max(count, thread_stats[tid]['count'])
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_better_with_more_threads (__main__.TestMultiThreaded)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 225, in test_better_with_more_threads
+    asyncio.run(self.make_requests(self.dyn_url, req_count))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 138, in make_requests
+    thread_stats[tid]['count'] = max(count, thread_stats[tid]['count'])
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_time_full_queue (__main__.TestMultiThreaded)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 215, in test_time_full_queue
+    asyncio.run(self.make_requests(self.dyn_url, req_count))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 138, in make_requests
+    thread_stats[tid]['count'] = max(count, thread_stats[tid]['count'])
+IndexError: list index out of range
+
+======================================================================
+FAIL: test_404 (__main__.TestStatusCodes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 267, in test_404
+    asyncio.run(self._make_req(self.not_found_url, 404, stat_map))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 251, in _make_req
+    self.assertIn(k, headers)
+AssertionError: 'stat-req-arrival' not found in {'content-type': 'text/html', 'content-length': '158'}
+
+======================================================================
+FAIL: test_dynamic (__main__.TestStatusCodes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 278, in test_dynamic
+    asyncio.run(self._make_req(self.dyn_url, 200, stat_map))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 253, in _make_req
+    self.assertEqual(int(float(headers[k].replace(": ",''))), stat_map[k], f'Unexpected value for {k}. Expected: {stat_map[k]}. Actual: {headers[k]}')
+AssertionError: 123145544855552 != 0 : Unexpected value for stat-thread-id. Expected: 0. Actual: : 123145544855552
+
+======================================================================
+FAIL: test_forbidden (__main__.TestStatusCodes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 300, in test_forbidden
+    asyncio.run(self._make_req(self.forbidden_url, 403, stat_map))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 251, in _make_req
+    self.assertIn(k, headers)
+AssertionError: 'stat-req-arrival' not found in {'content-type': 'text/html', 'content-length': '168'}
+
+======================================================================
+FAIL: test_post (__main__.TestStatusCodes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 311, in test_post
+    asyncio.run(self._make_req(self.static_url, 501, stat_map, method='post'))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 251, in _make_req
+    self.assertIn(k, headers)
+AssertionError: 'stat-req-arrival' not found in {'content-type': 'text/html', 'content-length': '155'}
+
+======================================================================
+FAIL: test_static (__main__.TestStatusCodes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "./server_tests.py", line 289, in test_static
+    asyncio.run(self._make_req(self.static_url, 200, stat_map))
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/runners.py", line 43, in run
+    return loop.run_until_complete(main)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/asyncio/base_events.py", line 579, in run_until_complete
+    return future.result()
+  File "./server_tests.py", line 251, in _make_req
+    self.assertIn(k, headers)
+AssertionError: 'stat-thread-id' not found in {'server': 'OS-HW3 Web Server', 'content-length': '293', 'content-type': 'text/html', 'stat-thread-static': ': 1', 'stat-req-arrival': ': 1641660699.810178', 'stat-req-dispatch': ': 0.000011', 'stat-thread-count': ': 1', 'stat-thread-dynamic': ': 0'}
+
+----------------------------------------------------------------------
+Ran 14 tests in 17.720s
+
+FAILED (failures=5, errors=9)
+test_drop_double_queue_size
+Setting up test:
+	thread: 3
+	queue size: 7
+	policy: dh
+Requesting url: http://localhost:8080/output.cgi
+test_drop_single
+Setting up test:
+	thread: 3
+	queue size: 7
+	policy: dh
+Requesting url: http://localhost:8080/output.cgi
+test_double_drop_random
+Setting up test:
+	thread: 3
+	queue size: 16
+	policy: random
+Requesting url: http://localhost:8080/output.cgi
+test_no_drop
+Setting up test:
+	thread: 3
+	queue size: 16
+	policy: random
+Requesting url: http://localhost:8080/output.cgi
+test_single_drop_random
+Setting up test:
+	thread: 3
+	queue size: 16
+	policy: random
+Requesting url: http://localhost:8080/output.cgi
+test_drop_double_queue_size
+Setting up test:
+	thread: 3
+	queue size: 7
+	policy: dt
+Requesting url: http://localhost:8080/output.cgi
+test_drop_single
+Setting up test:
+	thread: 3
+	queue size: 7
+	policy: dt
+Requesting url: http://localhost:8080/output.cgi
+test_better_with_more_threads
+Setting up test:
+	thread: 3
+	queue size: 80
+	policy: dt
+Requesting url: http://localhost:8080/output.cgi
+test_time_full_queue
+Setting up test:
+	thread: 3
+	queue size: 80
+	policy: dt
+Requesting url: http://localhost:8080/output.cgi
+test_404
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt
+test_dynamic
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt
+test_forbidden
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt
+test_post
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt
+test_static
+Setting up test:
+	thread: 1
+	queue size: 1
+	policy: dt
