@@ -63,14 +63,10 @@ int enqueue(queue_t *q, qnode_t node)
     pthread_mutex_lock(&q->lock);
     while ((q->length + q->working_threds) >= q->queue_max_length) // queue is full
     {
-        if (!strcmp(q->schedalg, "block"))
+
+        if ((q->length == 0) || (!strcmp(q->schedalg, "dt")))
         {
-            printf("queue is full 'Blocking', %d request %d threads\n", q->length, q->working_threds);
-            pthread_cond_wait(&q->full, &q->lock);
-        }
-        else if ((q->length == 0) || (!strcmp(q->schedalg, "dt")))
-        {
-            printf("queue is full 'Closing New Request', %d request %d threads\n", q->length, q->working_threds);
+            // printf("queue is full 'Closing New Request', %d request %d threads\n", q->length, q->working_threds);
             Close(node.connfd);
             pthread_mutex_unlock(&q->lock);
             return 0;
@@ -80,13 +76,20 @@ int enqueue(queue_t *q, qnode_t node)
             printf("queue is full 'Droping Head', %d request %d threads\n", q->length, q->working_threds);
             qnode_t tmp;
             dequeue_unsafe(q, &tmp);
+            Close(tmp.connfd);
         }
         else if (!strcmp(q->schedalg, "random"))
         {
-            printf("queue is full 'Droping Random', %d request %d threads\n", q->length, q->working_threds);
+            // printf("queue is full 'Droping Random', %d request %d threads\n", q->length, q->working_threds);
             drop_random(q);
         }
+        else
+        {
+            // printf("queue is full 'Blocking', %d request %d threads\n", q->length, q->working_threds);
+            pthread_cond_wait(&q->full, &q->lock);
+        }
     }
+
     q->queue[q->next_cell] = node;
     if (q->length == 0)
     {
@@ -227,11 +230,16 @@ void drop_random(queue_t *q) // asume that lock is locked
     int counter = 0;
     for (int i = 0; i < q->length; i++)
     {
+        int index = (q->oldest_record + i) % q->queue_max_length;
+
         if (random_array[i])
         {
-            int index = (q->oldest_record + i) % q->queue_max_length;
             new_array[counter] = q->queue[index];
             counter++;
+        }
+        else
+        {
+            Close(q->queue[index].connfd);
         }
     }
     if (counter == 0)

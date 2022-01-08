@@ -86,6 +86,6 @@ int main(int argc, char *argv[])
         gettimeofday(&request.createdAt, NULL);
         request.connfd = connfd;
         enqueue(incoming_requests, request);
-        printf("got new request\n");
+        printf("got new request. There are %d request and %d working threds\n", incoming_requests->length, incoming_requests->working_threds);
     }
 }
