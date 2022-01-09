@@ -27,6 +27,7 @@ void inc_total();
 void acknowledge_thread();
 void destroy_stat();
 void write_header(char *hdr, char *buf);
+void write_all_headers(char *buf);
 void load_request(qnode_t req);
 void inc_dynamic();
 

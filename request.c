@@ -31,13 +31,9 @@ void requestError(int fd, char *cause, char *errnum, char *shortmsg, char *longm
    printf("%s", buf);
 
    sprintf(buf, "Content-Length: %lu\r\n", strlen(body));
-   write_header("Stat-Thread-Id", buf);
-   write_header("Stat-Req-Arrival", buf);
-   write_header("Stat-Req-Dispatch", buf);
-   write_header("Stat-Thread-Static", buf);
-   write_header("Stat-Thread-Dynamic", buf);
-   write_header("Stat-Thread-Count", buf);
-   sprintf(buf, "%s\r\n", buf);
+   
+   write_all_headers(buf);
+
    Rio_writen(fd, buf, strlen(buf));
    printf("%s", buf);
 
@@ -127,14 +123,9 @@ void requestServeDynamic(int fd, char *filename, char *cgiargs)
    // The CGI script has to finish writing out the header.
    inc_dynamic();
    sprintf(buf, "HTTP/1.0 200 OK\r\n");
-   write_header("Stat-Thread-Id", buf);
-   write_header("Stat-Req-Arrival", buf);
-   write_header("Stat-Req-Dispatch", buf);
-   write_header("Stat-Thread-Static", buf);
-   write_header("Stat-Thread-Dynamic", buf);
-   write_header("Stat-Thread-Count", buf);
-   sprintf(buf, "%s\r\n", buf);
    sprintf(buf, "%sServer: OS-HW3 Web Server\r\n", buf);
+
+   write_all_headers(buf);
 
    Rio_writen(fd, buf, strlen(buf));
 
@@ -168,13 +159,9 @@ void requestServeStatic(int fd, char *filename, int filesize)
    sprintf(buf, "%sServer: OS-HW3 Web Server\r\n", buf);
    sprintf(buf, "%sContent-Length: %d\r\n", buf, filesize);
    sprintf(buf, "%sContent-Type: %s\r\n", buf, filetype);
-   write_header("Stat-Thread-Static", buf);
-   write_header("Stat-Req-Arrival", buf);
-   write_header("Stat-Req-Dispatch", buf);
-   write_header("Stat-Thread-Count", buf);
-   write_header("Stat-Thread-Dynamic", buf);
-   write_header("Stat-Thread-Id", buf);
-   sprintf(buf, "%s\r\n", buf);
+
+   write_all_headers(buf);
+
    Rio_writen(fd, buf, strlen(buf));
 
    //  Writes out to the client socket the memory-mapped file

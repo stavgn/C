@@ -148,3 +148,14 @@ void destroy_stat()
     pthread_mutex_destroy(&statManager->lock);
     free(statManager);
 }
+
+void write_all_headers(char *buf)
+{
+    write_header("Stat-Req-Arrival", buf);
+    write_header("Stat-Req-Dispatch", buf);
+    write_header("Stat-Thread-Id", buf);
+    write_header("Stat-Thread-Count", buf);
+    write_header("Stat-Thread-Static", buf);
+    write_header("Stat-Thread-Dynamic", buf);
+    sprintf(buf, "%s\r\n", buf);
+}

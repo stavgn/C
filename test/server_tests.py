@@ -9,7 +9,7 @@ from h11 import RemoteProtocolError
 
 SERVER_PATH = os.path.realpath(os.path.join(os.path.curdir, '..', 'server'))
 DYNAMIC_REQ_TIME = 0.2
-DEFAULT_PORT = 8080
+DEFAULT_PORT = 2000
 DEFAULT_THREAD_COUNT = 3
 DEFAULT_QUEUE_SIZE = 7
 DEFAULT_STATIC_PAGE = 'home.html'

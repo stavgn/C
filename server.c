@@ -19,7 +19,7 @@ queue_t *incoming_requests;
 
 void getargs(int *port, int *nthreads, int *queue_size, char **schedalg, int argc, char *argv[])
 {
-    if (argc < 5)
+    if (argc < 4)
     {
         fprintf(stderr, " Usage : %s <port><number of threads><queue size><schedalg>\n", argv[0]);
         exit(1);
